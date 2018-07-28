@@ -13,4 +13,9 @@ RUN set -ex \
     && mv linux-amd64/helm /usr/local/bin/helm \
     && rm -rf linux-amd64
 
+ADD kubetool /etc/kubetool
+RUN set -ex \
+    && chmod +x /etc/kubetool \
+    && ln -s /etc/kubetool /usr/local/bin/kubetool
+
 CMD ["/bin/sh"]
