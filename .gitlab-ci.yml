@@ -1,0 +1,18 @@
+stages:
+- build
+
+build:
+  stage: build
+  image: docker:stable
+  services:
+  - docker:dind
+  variables:
+    DOCKER_DRIVER: overlay2
+  script:
+  - export BUILD_HASH="$(echo $CI_COMMIT_SHA | cut -c 1-8)"
+  - echo ${CI_JOB_TOKEN} | docker login -u gitlab-ci-token --password-stdin registry.gitlab.com
+  - docker build -t registry.gitlab.com/claims/deployer:latest .
+  - docker tag registry.gitlab.com/claims/deployer:latest registry.gitlab.com/claims/deployer:${BUILD_HASH}
+  - docker push registry.gitlab.com/claims/deployer
+  only:
+  - master

@@ -1,0 +1,101 @@
+#!/bin/sh
+
+[[ -n $DEBUG ]] && set -x
+set -eou pipefail
+
+usage() {
+  cat <<"EOF"
+USAGE:
+  kubetool                    : show this message
+  kubetool ctx get            : gets the current context
+  kubetool ctx set NAME       : sets the current context
+  kubetool ctx ls,list        : lists all of the contexts
+  kubetool ctx rename OLD NEW : renames a context from the old value to the new valud
+  kubetool ns get             : get the current namespace for the current context
+  kubetool ns set NAME        : set the current namespace for the current context
+  kubetool ns ls,list         : list all namespaces for the current context
+  kubetool -h,--help          : show this message
+EOF
+  exit 1
+}
+
+list_contexts() {
+  kubectl config get-contexts -o=name | sort -n
+}
+
+get_context() {
+  kubectl config view -o=jsonpath='{.current-context}'
+}
+
+set_context() {
+  kubectl config use-context "${1}"
+}
+
+rename_context() {
+  kubectl config rename-context "${1}" "${2}"
+}
+
+list_namespaces() {
+  kubectl get namespaces -o=jsonpath='{range .items[*].metadata.name}{@}{"\n"}{end}'
+}
+
+get_namespace() {
+  local cur_ctx
+  cur_ctx="$(get_context)"
+  ns="$(kubectl config view -o=jsonpath="{.contexts[?(@.name==\"${cur_ctx}\")].context.namespace}")"
+  if [[ -z "${ns}" ]]; then
+    echo "default"
+  else
+    echo "${ns}"
+  fi
+}
+
+set_namespace() {
+  local ctx
+  ctx="$(get_context)"
+  kubectl config set-context "${ctx}" --namespace="${1}"
+}
+
+main() {
+  if [[ "$#" -eq 0 ]]; then
+    usage
+  elif [[ "${1}" == '-h' || "${1}" == '--help' ]]; then
+    usage
+  elif [[ "${1}" == "ns" ]]; then
+    if [[ "$#" -eq 2 && "${2}" == "get" ]]; then
+      get_namespace
+    elif [[ "$#" -eq 2 && "${2}" == "ls" ]]; then
+      list_namespaces
+    elif [[ "$#" -eq 2 && "${2}" == "list" ]]; then
+      list_namespaces
+    elif [[ "$#" -eq 3 && "${2}" == "set" ]]; then
+      set_namespace "${3}"
+    else
+      echo "error: invalid arguments" >&2
+      usage
+      exit 1
+    fi
+  elif [[ "${1}" == "ctx" ]]; then
+    if [[ "$#" -eq 2 && "${2}" == "get" ]]; then
+      get_context
+    elif [[ "$#" -eq 2 && "${2}" == "ls" ]]; then
+      list_contexts
+    elif [[ "$#" -eq 2 && "${2}" == "list" ]]; then
+      list_contexts
+    elif [[ "$#" -eq 3 && "${2}" == "set" ]]; then
+      set_context "${3}"
+    elif [[ "$#" -eq  4 && "${2}" == "rename" ]]; then
+      rename_context "${3}" "${4}"
+    else
+      echo "error: invalid arguments" >&2
+      usage
+      exit 1
+    fi
+  else
+    echo "error: invalid arguments" >&2
+    usage
+    exit 1
+  fi
+}
+
+main "$@"
