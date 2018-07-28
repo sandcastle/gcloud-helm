@@ -1,6 +1,6 @@
 # gcloud-helm
 
-> A container for that contains the [Google Cloud SDK](https://cloud.google.com/sdk/), [Helm](https://helm.sh/), [kubectl](https://kubernetes.io/docs/tasks/tools/install-kubectl/) and a few lightweight helpers.
+> A container with [Google Cloud SDK](https://cloud.google.com/sdk/), [Helm](https://helm.sh/), [kubectl](https://kubernetes.io/docs/tasks/tools/install-kubectl/) and a few lightweight helpers.
 
 ## Getting started
 
