@@ -32,7 +32,13 @@ set_context() {
 }
 
 rename_context() {
-  kubectl config rename-context "${1}" "${2}"
+  local ctx
+  if [[ "${1}" == "." ]]; then
+    ctx="$(get_context)"
+  else
+    ctx="${1}"
+  fi
+  kubectl config rename-context "${ctx}" "${2}"
 }
 
 list_namespaces() {
@@ -40,9 +46,9 @@ list_namespaces() {
 }
 
 get_namespace() {
-  local cur_ctx
-  cur_ctx="$(get_context)"
-  ns="$(kubectl config view -o=jsonpath="{.contexts[?(@.name==\"${cur_ctx}\")].context.namespace}")"
+  local ctx
+  ctx="$(get_context)"
+  ns="$(kubectl config view -o=jsonpath="{.contexts[?(@.name==\"${ctx}\")].context.namespace}")"
   if [[ -z "${ns}" ]]; then
     echo "default"
   else
