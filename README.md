@@ -49,11 +49,11 @@ deploy-staging:
 ## Kubetool
 
 > A lightweight (no deps) kubectl wrapper for working with contexts and namespaces,
-> heavily inspired by [kubectx](https://github.com/ahmetb/kubectx)
+> heavily inspired by the awesome [kubectx](https://github.com/ahmetb/kubectx)
 
 #### Commands
 
-This tool is provide to make the composition of some common `kubectl` calls in build
+This tool makes the composition of common `kubectl` operations in build
 scripts a lot easier.
 
 The following commands are available:
@@ -72,8 +72,8 @@ kubetool -h,--help          : show this message
 
 #### Example
 
-Without the `kubetool` some things like seting the current namespace for the current
-context take too much effort:
+Without the `kubetool` things like setting the namespace for the current
+context take too much boilerplate:
 
 ```sh
 KUBE_CTX="$(kubectl config current-context)"
