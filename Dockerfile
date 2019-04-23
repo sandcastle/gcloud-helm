@@ -2,7 +2,7 @@ FROM google/cloud-sdk:alpine
 LABEL maintainer="Glenn Morton <glenn@sandcastle.io>"
 
 # https://github.com/helm/helm/releases
-ENV HELM_VERSION 2.9.1
+ENV HELM_VERSION 2.13.1
 ENV HELM_FILENAME helm-v${HELM_VERSION}-linux-amd64.tar.gz
 
 RUN gcloud components install alpha beta kubectl
